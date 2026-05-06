@@ -1,0 +1,20 @@
+{
+  "name": "Yuzuki",
+  "version": "1.0.0",
+  "description": "Simplified WhatsApp bot using Baileys",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "install-bot": "npm install"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.68",
+    "@whiskeysockets/baileys": "7.0.0-rc.9",
+    "@hapi/boom": "^10.0.1",
+    "pino": "^9.0.0"
+  }
+}
