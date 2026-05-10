@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { startBot, logger } from "./bot.js";
 
 logger.info("Starting WhatsApp bot...");
@@ -19,7 +20,8 @@ process.on("SIGINT", async () => {
 });
 
 process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Uncaught exception");
+  logger.error({ err }, "Uncaught exception — shutting down");
+  process.exit(1);
 });
 
 process.on("unhandledRejection", (reason) => {

@@ -8,15 +8,15 @@ const DATA_DIR = path.dirname(SETTINGS_FILE);
 
 const DEFAULTS = {
   prefix: ".",
-  botName: "Yuzuki",
+  botName: "Yuzuki MD",
   ownerNumber: "233533416608",
-  mode: "public",
+  mode: "private",
   antidelete: false,
   autoblock: false,
   gconly: false,
-  menuBgUrl: "https://litter.catbox.moe/86d9vf.jpg",
+  menuBgUrl: "https://c.termai.cc/i183/r021.jpg",
   channelId: "120363406397452589@newsletter",
-  channelName: "Kira-Aizen Information",
+  channelName: "Yuzuki   更新",
   owners: [],
   resellers: [],
   keys: [],
@@ -78,9 +78,15 @@ export function removeOwner(number) {
 }
 
 export function isOwner(senderJid, settings) {
-  const clean = (jid) => jid?.split("@")[0] ?? "";
+  // Strip both @domain and :device suffix (e.g. 1234:5@s.whatsapp.net → 1234)
+  const clean = (jid) => jid?.split("@")[0]?.split(":")[0] ?? "";
   const sender = clean(senderJid);
+  // 1. Check settings ownerNumber
   if (settings.ownerNumber && sender === settings.ownerNumber) return true;
+  // 2. Fallback: check PHONE_NUMBER env (Pterodactyl env var) — always the real owner
+  const envOwner = (process.env.PHONE_NUMBER ?? "").replace(/[^0-9]/g, "");
+  if (envOwner && sender === envOwner) return true;
+  // 3. Check owners array
   return (settings.owners ?? []).some((o) => o.number === sender);
 }
 
@@ -124,6 +130,17 @@ export function removeReseller(number) {
   s.resellers = (s.resellers ?? []).filter((r) => r.number !== number);
   saveSettings(s);
   return s.resellers.length < before;
+}
+
+// FIX: added resetReseller (was in OWNER_COMMANDS but had no implementation)
+export function resetReseller(number, newQuota = null) {
+  const s = loadSettings();
+  const r = (s.resellers ?? []).find((r) => r.number === number);
+  if (!r) return false;
+  r.usedQuota = 0;
+  if (newQuota !== null) r.quota = newQuota;
+  saveSettings(s);
+  return true;
 }
 
 export function getCases() {
